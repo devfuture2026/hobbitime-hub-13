@@ -1,4 +1,5 @@
 import React from 'react';
+import { isToday } from 'date-fns';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -27,9 +28,18 @@ interface Task {
   completed: boolean;
 }
 
+interface Project {
+  id: string;
+  name: string;
+  color: string;
+  category: 'hobby' | 'work' | 'personal';
+  area: string;
+}
+
 interface AreasDashboardProps {
   tasks: Task[];
-  onQuickAddTask: (areaName: string) => void;
+  projects: Project[];
+  onAreaSelect: (areaName: string) => void;
 }
 
 const areas = [
@@ -83,27 +93,26 @@ const areas = [
   }
 ];
 
-export const AreasDashboard: React.FC<AreasDashboardProps> = ({ tasks, onQuickAddTask }) => {
-  // Calculate stats for each area based on tasks
+export const AreasDashboard: React.FC<AreasDashboardProps> = ({ tasks, projects, onAreaSelect }) => {
+  // Calculate stats for each area based on actual tasks mapped via project.area
   const getAreaStats = (areaName: string) => {
-    // For now, return mock data since we don't have area-to-task mapping
-    // In a real app, you'd filter tasks by area
-    const mockStats = {
-      totalTasks: Math.floor(Math.random() * 20) + 1,
-      completedTasks: Math.floor(Math.random() * 15),
-      activeToday: Math.floor(Math.random() * 5)
-    };
-    
+    const areaProjectIds = projects.filter(p => p.area === areaName).map(p => p.id);
+    const areaTasks = tasks.filter(t => areaProjectIds.includes(t.projectId));
+    const completedTasks = areaTasks.filter(t => t.completed);
+    const activeToday = areaTasks.filter(t => isToday(t.startTime));
+
     return {
-      ...mockStats,
-      completionRate: mockStats.totalTasks > 0 ? (mockStats.completedTasks / mockStats.totalTasks) * 100 : 0
+      totalTasks: areaTasks.length,
+      completedTasks: completedTasks.length,
+      activeToday: activeToday.length,
+      completionRate: areaTasks.length > 0 ? (completedTasks.length / areaTasks.length) * 100 : 0
     };
   };
 
   return (
     <div className="flex-1 p-6">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-foreground mb-2">Life Areas Dashboard</h1>
+        <h1 className="text-3xl font-bold text-foreground mb-2">Areas of Life</h1>
         <p className="text-muted-foreground">
           Organize your life into meaningful areas and track your progress across all dimensions.
         </p>
@@ -115,7 +124,11 @@ export const AreasDashboard: React.FC<AreasDashboardProps> = ({ tasks, onQuickAd
           const stats = getAreaStats(area.name);
           
           return (
-            <Card key={area.name} className="group hover:shadow-lg transition-all duration-300 border-border">
+            <Card
+              key={area.name}
+              className="group hover:shadow-lg transition-all duration-300 border-border cursor-pointer"
+              onClick={() => onAreaSelect(area.name)}
+            >
               <CardHeader className="pb-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
@@ -129,14 +142,7 @@ export const AreasDashboard: React.FC<AreasDashboardProps> = ({ tasks, onQuickAd
                       <CardTitle className="text-lg font-semibold">{area.name}</CardTitle>
                     </div>
                   </div>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="opacity-0 group-hover:opacity-100 transition-opacity"
-                    onClick={() => onQuickAddTask(area.name)}
-                  >
-                    <Plus className="w-4 h-4" />
-                  </Button>
+                  {/* Removed per request: no plus button on area/project cards */}
                 </div>
                 <p className="text-sm text-muted-foreground mt-2">{area.description}</p>
               </CardHeader>

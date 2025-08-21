@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Calendar, Bell, Settings, Search, Clock, ChevronDown } from 'lucide-react';
 import { format, addMonths, subMonths } from 'date-fns';
 
-type ViewMode = 'calendar' | 'areas';
+type ViewMode = 'calendar' | 'areas' | 'area-detail' | 'category-detail';
 
 interface HeaderProps {
   selectedDate: Date;
@@ -14,8 +14,8 @@ interface HeaderProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
   onOpenSettings: () => void;
-  viewMode: ViewMode;
-  onViewModeChange: (mode: ViewMode) => void;
+  viewMode: 'calendar' | 'areas' | 'area-detail' | 'category-detail';
+  onViewModeChange: (mode: 'calendar' | 'areas' | 'area-detail' | 'category-detail') => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -62,19 +62,23 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <header className="bg-card border-b border-border shadow-soft sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <header className="bg-card border-b border-border shadow-soft sticky top-0">
+      <div className="w-full px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Left side - Logo */}
-          <div className="flex items-center space-x-3 ml-4">
+          <button
+            className="flex items-center space-x-3 cursor-pointer"
+            onClick={() => onViewModeChange('calendar')}
+            aria-label="Go to Calendar View"
+          >
             <div className="p-2 bg-gradient-primary rounded-lg">
               <Calendar className="w-6 h-6 text-white" />
             </div>
-            <div>
+            <div className="text-left">
               <h1 className="text-xl font-semibold text-foreground">Productive Calendar</h1>
               <p className="text-sm text-muted-foreground">Track your hobbies and projects</p>
             </div>
-          </div>
+          </button>
 
           {/* Center - Calendar Controls (only visible in calendar mode) */}
           {viewMode === 'calendar' && (
@@ -114,7 +118,7 @@ export const Header: React.FC<HeaderProps> = ({
                 onClick={() => setIsViewDropdownOpen(!isViewDropdownOpen)}
                 className="border-primary/20 hover:bg-primary/10"
               >
-                {viewMode === 'calendar' ? 'Calendar View' : 'Areas'}
+                {viewMode === 'calendar' ? 'Calendar View' : 'Area View'}
                 <ChevronDown className="w-4 h-4 ml-2" />
               </Button>
               
@@ -137,8 +141,9 @@ export const Header: React.FC<HeaderProps> = ({
                         setIsViewDropdownOpen(false);
                       }}
                     >
-                      Areas
+                      Area View
                     </button>
+                    
                   </div>
                 </div>
               )}

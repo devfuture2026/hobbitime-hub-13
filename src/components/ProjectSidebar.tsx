@@ -53,7 +53,7 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
   const getCategoryIcon = useCallback((category: Project['category']) => {
     switch (category) {
       case 'hobby': return <Target className="w-4 h-4" />;
-      case 'work': return <Calendar className="w-4 h-4" />;
+      case 'work': return <Calendar className="w-4 h-4 z-20" />;
       case 'personal': return <Clock className="w-4 h-4" />;
     }
   }, []);
@@ -186,14 +186,6 @@ export const ProjectSidebar: React.FC<ProjectSidebarProps> = ({
                         </CardTitle>
                       </div>
                       <div className="flex items-center space-x-1">
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-primary/10"
-                          onClick={(e) => handleQuickAddTask(e, project.id)}
-                        >
-                          <Plus className="w-3 h-3" />
-                        </Button>
                         <Badge 
                           variant="secondary" 
                           className={cn("text-xs", getCategoryColor(project.category))}

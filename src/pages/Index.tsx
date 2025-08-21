@@ -1,7 +1,9 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { CalendarGrid } from '@/components/CalendarGrid';
 import { TodayOverview } from '@/components/TodayOverview';
 import { AreasDashboard } from '@/components/AreasDashboard';
+import { AreaDashboard } from '@/components/AreaDashboard';
+import { CategoryBoard } from '@/components/CategoryBoard';
 import { AlarmPanel } from '@/components/AlarmPanel';
 import { TaskModal } from '@/components/TaskModal';
 import { ProjectModal } from '@/components/ProjectModal';
@@ -10,7 +12,22 @@ import { Header } from '@/components/Header';
 import { SettingsModal } from '@/components/SettingsModal';
 import { addDays, startOfToday } from 'date-fns';
 
-type ViewMode = 'calendar' | 'areas';
+type ViewMode = 'calendar' | 'areas' | 'area-detail' | 'category-detail';
+
+type Task = {
+  id: string;
+  title: string;
+  projectId: string;
+  startTime: Date;
+  duration: number;
+  color: string;
+  priority: 'high' | 'medium' | 'low';
+  completed: boolean;
+  listId?: string;
+  dueDate?: Date | null;
+  area?: string;
+  category?: string;
+};
 
 const Index = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -23,6 +40,11 @@ const Index = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>('calendar');
+  const [selectedArea, setSelectedArea] = useState<string | null>(null);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
+  const [lists, setLists] = useState<Array<{ id: string; title: string; projectId: string }>>([]);
+  const [categoryFilter, setCategoryFilter] = useState<'all' | 'active' | 'completed' | 'overdue'>('all');
+  const draggedTaskIdRef = useRef<string | null>(null);
   const [darkMode, setDarkMode] = useState(() => {
     // Check localStorage first, then system preference
     const saved = localStorage.getItem('darkMode');
@@ -53,7 +75,8 @@ const Index = () => {
       color: '#10B981',
       tasksCount: 12,
       completedTasks: 8,
-      category: 'hobby' as const
+      category: 'hobby' as const,
+      area: 'Education'
     },
     {
       id: '2',
@@ -61,7 +84,8 @@ const Index = () => {
       color: '#F59E0B',
       tasksCount: 15,
       completedTasks: 10,
-      category: 'personal' as const
+      category: 'personal' as const,
+      area: 'Wellness'
     },
     {
       id: '3',
@@ -69,11 +93,12 @@ const Index = () => {
       color: '#3B82F6',
       tasksCount: 8,
       completedTasks: 3,
-      category: 'work' as const
+      category: 'work' as const,
+      area: 'Development'
     }
   ]);
 
-  const [tasks, setTasks] = useState([
+  const [tasks, setTasks] = useState<Task[]>([
     {
       id: '1',
       title: 'Spanish Vocabulary',
@@ -81,7 +106,7 @@ const Index = () => {
       startTime: new Date(new Date().setHours(9, 0, 0, 0)),
       duration: 1,
       color: '#10B981',
-      priority: 'medium' as const,
+      priority: 'medium',
       completed: false
     },
     {
@@ -91,7 +116,7 @@ const Index = () => {
       startTime: new Date(new Date().setHours(7, 0, 0, 0)),
       duration: 1,
       color: '#F59E0B',
-      priority: 'high' as const,
+      priority: 'high',
       completed: false
     }
   ]);
@@ -166,10 +191,43 @@ const Index = () => {
     setIsProjectTasksModalOpen(true);
   }, []);
 
-  const handleQuickAddTask = useCallback((projectIdOrAreaName: string) => {
-    setQuickAddProjectId(projectIdOrAreaName);
+  const handleQuickAddTask = useCallback((projectId: string) => {
+    setQuickAddProjectId(projectId);
     setSelectedTime(new Date());
     setIsTaskModalOpen(true);
+  }, []);
+
+  const handleAreaSelect = useCallback((areaName: string) => {
+    setSelectedArea(areaName);
+    setViewMode('area-detail');
+  }, []);
+
+  const handleBackToAreas = useCallback(() => {
+    setSelectedArea(null);
+    setViewMode('areas');
+  }, []);
+
+  const handleCategorySelect = useCallback((projectId: string) => {
+    setSelectedCategoryId(projectId);
+    setViewMode('category-detail');
+  }, []);
+
+  const handleBackToArea = useCallback(() => {
+    setSelectedCategoryId(null);
+    setViewMode('area-detail');
+  }, []);
+
+  const handleReorderTasks = useCallback((projectId: string, sourceId: string, targetId: string) => {
+    setTasks(prev => {
+      const list = prev.filter(t => t.projectId === projectId);
+      const others = prev.filter(t => t.projectId !== projectId);
+      const sourceIdx = list.findIndex(t => t.id === sourceId);
+      const targetIdx = list.findIndex(t => t.id === targetId);
+      if (sourceIdx === -1 || targetIdx === -1) return prev;
+      const [moved] = list.splice(sourceIdx, 1);
+      list.splice(targetIdx, 0, moved);
+      return [...others, ...list];
+    });
   }, []);
 
   const handleGoToToday = useCallback(() => {
@@ -228,6 +286,10 @@ const Index = () => {
   // View mode change handler
   const handleViewModeChange = useCallback((mode: ViewMode) => {
     setViewMode(mode);
+    if (mode !== 'area-detail' && mode !== 'category-detail') {
+      setSelectedArea(null);
+      setSelectedCategoryId(null);
+    }
   }, []);
 
   return (
@@ -240,8 +302,8 @@ const Index = () => {
         searchQuery={searchQuery}
         onSearchChange={handleSearchChange}
         onOpenSettings={handleOpenSettings}
-        viewMode={viewMode}
-        onViewModeChange={handleViewModeChange}
+        viewMode={viewMode as any}
+        onViewModeChange={handleViewModeChange as any}
       />
 
       {/* Main Content */}
@@ -270,11 +332,109 @@ const Index = () => {
                 showAlarms={true}
               />
             </div>
-          ) : (
+          ) : viewMode === 'areas' ? (
             <AreasDashboard
               tasks={tasks}
-              onQuickAddTask={handleQuickAddTask}
+              projects={projects}
+              onAreaSelect={handleAreaSelect}
             />
+          ) : viewMode === 'area-detail' ? (
+            selectedArea && (
+              <AreaDashboard
+                areaName={selectedArea}
+                tasks={tasks}
+                projects={projects}
+                onBack={handleBackToAreas}
+                onAddCategory={(areaName) => {
+                  setIsProjectModalOpen(true);
+                }}
+                onCategorySelect={handleCategorySelect}
+                onQuickAddTask={(projectId) => {
+                  setQuickAddProjectId(projectId);
+                  setSelectedTime(new Date());
+                  setIsTaskModalOpen(true);
+                }}
+                onReorderCategories={(areaName, sourceId, targetId) => {
+                  setProjects(prev => {
+                    const cur = [...prev];
+                    const sourceIdx = cur.findIndex(p => p.id === sourceId);
+                    const targetIdx = cur.findIndex(p => p.id === targetId);
+                    if (sourceIdx === -1 || targetIdx === -1) return prev;
+                    const [moved] = cur.splice(sourceIdx, 1);
+                    cur.splice(targetIdx, 0, moved);
+                    return cur;
+                  });
+                }}
+                onRenameCategory={(projectId, newName) => {
+                  setProjects(prev => prev.map(p => p.id === projectId ? { ...p, name: newName } : p));
+                }}
+                onDeleteCategory={(projectId) => {
+                  setProjects(prev => prev.filter(p => p.id !== projectId));
+                  setTasks(prev => prev.filter(t => t.projectId !== projectId));
+                }}
+              />
+            )
+          ) : (
+            selectedCategoryId && (
+              <CategoryBoard
+                project={projects.find(p => p.id === selectedCategoryId)!}
+                tasks={tasks}
+                lists={lists}
+                onBack={handleBackToArea}
+                onAddList={(projectId, title) => setLists(prev => [...prev, { id: Date.now().toString(), title, projectId }])}
+                onRenameList={(listId, newTitle) => setLists(prev => prev.map(l => l.id === listId ? { ...l, title: newTitle } : l))}
+                onDeleteList={(listId) => {
+                  setLists(prev => prev.filter(l => l.id !== listId));
+                  setTasks(prev => prev.map(t => t.listId === listId ? { ...t, listId: undefined } : t));
+                }}
+                onAddTask={(listId, title) => {
+                  const project = projects.find(p => p.id === selectedCategoryId)!;
+                  const newTask = {
+                    id: Date.now().toString(),
+                    title,
+                    completed: false,
+                    projectId: project.id,
+                    listId,
+                    area: project.area,
+                    category: project.name,
+                    startTime: new Date(),
+                    duration: 1,
+                    priority: 'medium',
+                    color: project.color
+                  } as any;
+                  setTasks(prev => [...prev, newTask]);
+                }}
+                onToggleTask={(taskId) => setTasks(prev => prev.map(t => t.id === taskId ? { ...t, completed: !t.completed } : t))}
+                onEditTask={(taskId, changes) => setTasks(prev => prev.map(t => t.id === taskId ? { ...t, ...changes } : t))}
+                onDeleteTask={(taskId) => setTasks(prev => prev.filter(t => t.id !== taskId))}
+                onReorderWithinList={(listId, sourceId, targetId) => {
+                  setTasks(prev => {
+                    const list = prev.filter(t => t.listId === listId);
+                    const others = prev.filter(t => t.listId !== listId);
+                    const sIdx = list.findIndex(t => t.id === sourceId);
+                    const tIdx = list.findIndex(t => t.id === targetId);
+                    if (sIdx === -1 || tIdx === -1) return prev;
+                    const [moved] = list.splice(sIdx, 1);
+                    list.splice(tIdx, 0, moved);
+                    return [...others, ...list];
+                  });
+                }}
+                onMoveTaskToList={(taskId, toListId, beforeTaskId) => {
+                  setTasks(prev => {
+                    const updated = prev.map(t => t.id === taskId ? { ...t, listId: toListId } : t);
+                    if (!beforeTaskId) return updated;
+                    const list = updated.filter(t => t.listId === toListId);
+                    const others = updated.filter(t => t.listId !== toListId);
+                    const movingIdx = list.findIndex(t => t.id === taskId);
+                    const beforeIdx = list.findIndex(t => t.id === beforeTaskId);
+                    if (movingIdx === -1 || beforeIdx === -1) return updated;
+                    const [moved] = list.splice(movingIdx, 1);
+                    list.splice(beforeIdx, 0, moved);
+                    return [...others, ...list];
+                  });
+                }}
+              />
+            )
           )}
 
           {/* Alarm Panel (Always visible in calendar mode) */}
@@ -298,6 +458,7 @@ const Index = () => {
           selectedTime={selectedTime}
           projects={projects}
           preselectedProjectId={quickAddProjectId}
+          areaFilter={viewMode === 'area-detail' ? selectedArea ?? undefined : undefined}
         />
       )}
 
@@ -306,6 +467,7 @@ const Index = () => {
           isOpen={isProjectModalOpen}
           onClose={handleCloseProjectModal}
           onCreateProject={handleCreateProject}
+          lockedArea={selectedArea || undefined}
         />
       )}
 
@@ -334,3 +496,4 @@ const Index = () => {
 };
 
 export default Index;
+

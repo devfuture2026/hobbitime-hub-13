@@ -14,6 +14,7 @@ interface Project {
   name: string;
   color: string;
   category: 'hobby' | 'work' | 'personal';
+  area: string;
 }
 
 interface TaskModalProps {
@@ -23,6 +24,7 @@ interface TaskModalProps {
   selectedTime?: Date;
   projects: Project[];
   preselectedProjectId?: string;
+  areaFilter?: string;
 }
 
 export const TaskModal: React.FC<TaskModalProps> = ({
@@ -31,7 +33,8 @@ export const TaskModal: React.FC<TaskModalProps> = ({
   onCreateTask,
   selectedTime,
   projects,
-  preselectedProjectId
+  preselectedProjectId,
+  areaFilter
 }) => {
   const [taskData, setTaskData] = useState({
     title: '',
@@ -68,6 +71,8 @@ export const TaskModal: React.FC<TaskModalProps> = ({
       title: taskData.title,
       description: taskData.description,
       projectId: taskData.projectId,
+      area: selectedProject?.area,
+      category: selectedProject?.name,
       startTime: finalStartTime,
       duration: taskData.duration,
       priority: taskData.priority,
@@ -144,7 +149,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
                   <SelectValue placeholder="Select project" />
                 </SelectTrigger>
                 <SelectContent>
-                  {projects.map(project => (
+                  {(areaFilter ? projects.filter(p => p.area === areaFilter) : projects).map(project => (
                     <SelectItem key={project.id} value={project.id}>
                       <div className="flex items-center space-x-2">
                         <div 

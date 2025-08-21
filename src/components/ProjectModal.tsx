@@ -13,23 +13,27 @@ interface Project {
   tasksCount: number;
   completedTasks: number;
   category: 'hobby' | 'work' | 'personal';
+  area: string;
 }
 
 interface ProjectModalProps {
   isOpen: boolean;
   onClose: () => void;
   onCreateProject: (project: Omit<Project, 'id' | 'tasksCount' | 'completedTasks'>) => void;
+  lockedArea?: string;
 }
 
 export const ProjectModal: React.FC<ProjectModalProps> = ({
   isOpen,
   onClose,
-  onCreateProject
+  onCreateProject,
+  lockedArea
 }) => {
   const [projectData, setProjectData] = useState({
     name: '',
     color: '#3B82F6',
-    category: 'personal' as 'hobby' | 'work' | 'personal'
+    category: 'personal' as 'hobby' | 'work' | 'personal',
+    area: lockedArea || 'Development'
   });
 
   const colors = [
@@ -43,6 +47,17 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
     { value: 'personal', label: 'Personal', icon: Clock }
   ];
 
+  const areas = [
+    'Development',
+    'Wellness',
+    'Chores',
+    'Education',
+    'Community',
+    'Leisure',
+    'Finance',
+    'Mindfulness'
+  ];
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!projectData.name) return;
@@ -52,7 +67,8 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
     setProjectData({
       name: '',
       color: '#3B82F6',
-      category: 'personal'
+      category: 'personal',
+      area: lockedArea || 'Development'
     });
   };
 
@@ -102,6 +118,26 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
                     </SelectItem>
                   );
                 })}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label className="text-sm font-medium">Area</Label>
+            <Select
+              value={projectData.area}
+              onValueChange={(value: string) => 
+                setProjectData({ ...projectData, area: value })
+              }
+              disabled={Boolean(lockedArea)}
+            >
+              <SelectTrigger className="border-primary/20">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {areas.map(a => (
+                  <SelectItem key={a} value={a}>{a}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
