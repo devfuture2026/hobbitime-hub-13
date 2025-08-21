@@ -10,8 +10,6 @@ type ViewMode = 'calendar' | 'areas';
 interface HeaderProps {
   selectedDate: Date;
   onDateChange: (date: Date) => void;
-  showAlarms: boolean;
-  onToggleAlarms: () => void;
   onGoToToday: () => void;
   searchQuery: string;
   onSearchChange: (query: string) => void;
@@ -23,8 +21,6 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({
   selectedDate,
   onDateChange,
-  showAlarms,
-  onToggleAlarms,
   onGoToToday,
   searchQuery,
   onSearchChange,
@@ -159,18 +155,6 @@ export const Header: React.FC<HeaderProps> = ({
               />
             </div>
             
-            {/* Control Buttons - only show alarms in calendar mode */}
-            {viewMode === 'calendar' && (
-              <Button
-                variant={showAlarms ? "default" : "outline"}
-                size="sm"
-                onClick={onToggleAlarms}
-                className={showAlarms ? "bg-primary" : "border-primary/20"}
-              >
-                <Bell className="w-4 h-4 mr-2" />
-                Alarms
-              </Button>
-            )}
             
             <Button 
               variant="outline" 

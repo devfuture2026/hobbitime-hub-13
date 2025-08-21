@@ -20,7 +20,6 @@ const Index = () => {
   const [isProjectTasksModalOpen, setIsProjectTasksModalOpen] = useState(false);
   const [selectedProjectId, setSelectedProjectId] = useState<string>();
   const [quickAddProjectId, setQuickAddProjectId] = useState<string>();
-  const [showAlarms, setShowAlarms] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>('calendar');
@@ -187,10 +186,6 @@ const Index = () => {
     );
   }, []);
 
-  // Memoize modal toggle handlers to prevent recreation
-  const handleToggleAlarms = useCallback(() => {
-    setShowAlarms(prev => !prev);
-  }, []);
 
   const handleOpenSettings = useCallback(() => {
     setIsSettingsOpen(true);
@@ -241,8 +236,6 @@ const Index = () => {
       <Header
         selectedDate={selectedDate}
         onDateChange={handleDateChange}
-        showAlarms={showAlarms}
-        onToggleAlarms={handleToggleAlarms}
         onGoToToday={handleGoToToday}
         searchQuery={searchQuery}
         onSearchChange={handleSearchChange}
@@ -274,7 +267,7 @@ const Index = () => {
                 onDateChange={handleDateChange}
                 currentTime={new Date()}
                 alarms={alarms}
-                showAlarms={showAlarms}
+                showAlarms={true}
               />
             </div>
           ) : (
@@ -284,8 +277,8 @@ const Index = () => {
             />
           )}
 
-          {/* Alarm Panel (Conditional - only in calendar mode) */}
-          {viewMode === 'calendar' && showAlarms && (
+          {/* Alarm Panel (Always visible in calendar mode) */}
+          {viewMode === 'calendar' && (
             <div className="w-80">
               <AlarmPanel
                 alarms={alarms}
