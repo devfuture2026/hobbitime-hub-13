@@ -47,49 +47,37 @@ const areas = [
     name: 'Development',
     icon: Code,
     color: '#3B82F6',
-    description: 'Coding, programming, and technical skills'
+    description: 'This is your development area'
   },
   {
     name: 'Wellness',
     icon: Heart,
     color: '#EF4444',
-    description: 'Health, fitness, and mental wellbeing'
+    description: 'This is your wellness area'
   },
   {
     name: 'Chores',
     icon: Home,
     color: '#6B7280',
-    description: 'Household tasks and maintenance'
+    description: 'This is your chores area'
   },
   {
     name: 'Education',
     icon: GraduationCap,
     color: '#10B981',
-    description: 'Learning and skill development'
-  },
-  {
-    name: 'Community',
-    icon: Users,
-    color: '#8B5CF6',
-    description: 'Social activities and volunteering'
+    description: 'This is your education area'
   },
   {
     name: 'Leisure',
     icon: Gamepad2,
     color: '#F59E0B',
-    description: 'Entertainment and hobbies'
-  },
-  {
-    name: 'Finance',
-    icon: DollarSign,
-    color: '#059669',
-    description: 'Money management and investments'
+    description: 'This is your leisure area'
   },
   {
     name: 'Mindfulness',
     icon: Brain,
     color: '#7C3AED',
-    description: 'Meditation and self-reflection'
+    description: 'This is your mindfulness area'
   }
 ];
 
@@ -229,7 +217,7 @@ export const AreasDashboard: React.FC<AreasDashboardProps> = ({ tasks, projects,
               <div className="text-sm text-muted-foreground">Active Today</div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-foreground">8</div>
+              <div className="text-2xl font-bold text-foreground">6</div>
               <div className="text-sm text-muted-foreground">Life Areas</div>
             </div>
           </div>

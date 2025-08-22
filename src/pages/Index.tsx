@@ -76,48 +76,348 @@ const Index = () => {
       tasksCount: 12,
       completedTasks: 8,
       category: 'hobby' as const,
-      area: 'Education'
+      area: 'Education',
+      dueDate: null
     },
     {
       id: '2',
-      name: 'Fitness Journey',
+      name: 'Working Out',
       color: '#F59E0B',
       tasksCount: 15,
       completedTasks: 10,
       category: 'personal' as const,
-      area: 'Wellness'
+      area: 'Wellness',
+      dueDate: null
     },
     {
       id: '3',
-      name: 'React Development',
+      name: 'MindTrack: Otto',
       color: '#3B82F6',
       tasksCount: 8,
       completedTasks: 3,
       category: 'work' as const,
-      area: 'Development'
+      area: 'Development',
+      dueDate: new Date('2024-12-31')
+    },
+    {
+      id: '4',
+      name: 'Desktop Application',
+      color: '#8B5CF6',
+      tasksCount: 0,
+      completedTasks: 0,
+      category: 'work' as const,
+      area: 'Development',
+      dueDate: null
+    },
+    {
+      id: '5',
+      name: 'Web Application',
+      color: '#EC4899',
+      tasksCount: 0,
+      completedTasks: 0,
+      category: 'work' as const,
+      area: 'Development',
+      dueDate: null
+    },
+    {
+      id: '6',
+      name: 'Mobile Application',
+      color: '#06B6D4',
+      tasksCount: 0,
+      completedTasks: 0,
+      category: 'work' as const,
+      area: 'Development',
+      dueDate: null
+    },
+    {
+      id: '7',
+      name: 'CrossPlatform Application',  
+      color: '#84CC16',
+      tasksCount: 0,
+      completedTasks: 0,
+      category: 'work' as const,
+      area: 'Development',
+      dueDate: null
+    },
+    {
+      id: '8',
+      name: 'Household Tasks',
+      color: '#6B7280',
+      tasksCount: 0,
+      completedTasks: 0,
+      category: 'personal' as const,
+      area: 'Chores',
+      dueDate: null
+    },
+    {
+      id: '9',
+      name: 'Entertainment',
+      color: '#F59E0B',
+      tasksCount: 0,
+      completedTasks: 0,
+      category: 'hobby' as const,
+      area: 'Leisure',
+      dueDate: null
+    },
+    {
+      id: '10',
+      name: 'Spiritual Practice',
+      color: '#7C3AED',
+      tasksCount: 0,
+      completedTasks: 0,
+      category: 'personal' as const,
+      area: 'Mindfulness',
+      dueDate: null
     }
   ]);
 
   const [tasks, setTasks] = useState<Task[]>([
+    // Wellness tasks
     {
       id: '1',
-      title: 'Spanish Vocabulary',
-      projectId: '1',
-      startTime: new Date(new Date().setHours(9, 0, 0, 0)),
-      duration: 1,
-      color: '#10B981',
-      priority: 'medium',
-      completed: false
+      title: 'Waking up at a consistent time',
+      projectId: '2',
+      startTime: new Date(new Date().setHours(6, 30, 0, 0)),
+      duration: 0.5,
+      color: '#F59E0B',
+      priority: 'high',
+      completed: false,
+      area: 'Wellness'
     },
     {
       id: '2',
-      title: 'Morning Workout',
+      title: 'Working out (squats, pushups, walks)',
       projectId: '2',
       startTime: new Date(new Date().setHours(7, 0, 0, 0)),
       duration: 1,
       color: '#F59E0B',
       priority: 'high',
-      completed: false
+      completed: false,
+      area: 'Wellness'
+    },
+    {
+      id: '3',
+      title: 'Cooking (weekly grocery list, daily meals: breakfast, lunch, dinner, snacks)',
+      projectId: '2',
+      startTime: new Date(new Date().setHours(8, 0, 0, 0)),
+      duration: 1,
+      color: '#F59E0B',
+      priority: 'medium',
+      completed: false,
+      area: 'Wellness'
+    },
+    {
+      id: '4',
+      title: 'Skin care routine',
+      projectId: '2',
+      startTime: new Date(new Date().setHours(22, 0, 0, 0)),
+      duration: 0.5,
+      color: '#F59E0B',
+      priority: 'medium',
+      completed: false,
+      area: 'Wellness'
+    },
+    {
+      id: '5',
+      title: 'Showering',
+      projectId: '2',
+      startTime: new Date(new Date().setHours(21, 0, 0, 0)),
+      duration: 0.5,
+      color: '#F59E0B',
+      priority: 'medium',
+      completed: false,
+      area: 'Wellness'
+    },
+    {
+      id: '6',
+      title: 'Brushing teeth',
+      projectId: '2',
+      startTime: new Date(new Date().setHours(22, 30, 0, 0)),
+      duration: 0.25,
+      color: '#F59E0B',
+      priority: 'high',
+      completed: false,
+      area: 'Wellness'
+    },
+    // Education tasks
+    {
+      id: '7',
+      title: 'Reading / Literary comprehension (with memorization practice)',
+      projectId: '1',
+      startTime: new Date(new Date().setHours(9, 0, 0, 0)),
+      duration: 1,
+      color: '#10B981',
+      priority: 'medium',
+      completed: false,
+      area: 'Education'
+    },
+    {
+      id: '8',
+      title: 'Mathematics',
+      projectId: '1',
+      startTime: new Date(new Date().setHours(10, 0, 0, 0)),
+      duration: 1,
+      color: '#10B981',
+      priority: 'medium',
+      completed: false,
+      area: 'Education'
+    },
+    {
+      id: '9',
+      title: 'I.T. / Computer Science',
+      projectId: '1',
+      startTime: new Date(new Date().setHours(11, 0, 0, 0)),
+      duration: 1,
+      color: '#10B981',
+      priority: 'medium',
+      completed: false,
+      area: 'Education'
+    },
+    {
+      id: '10',
+      title: 'Learn Spanish (ex. Duolingo)',
+      projectId: '1',
+      startTime: new Date(new Date().setHours(12, 0, 0, 0)),
+      duration: 0.5,
+      color: '#10B981',
+      priority: 'medium',
+      completed: false,
+      area: 'Education'
+    },
+    {
+      id: '11',
+      title: 'Music study: guitar (songs, chords, techniques), piano practice, rapping practice',
+      projectId: '1',
+      startTime: new Date(new Date().setHours(19, 0, 0, 0)),
+      duration: 1,
+      color: '#10B981',
+      priority: 'low',
+      completed: false,
+      area: 'Education'
+    },
+    // Chores tasks
+    {
+      id: '12',
+      title: 'Taking out the trash',
+      projectId: '8',
+      startTime: new Date(new Date().setHours(20, 0, 0, 0)),
+      duration: 0.25,
+      color: '#6B7280',
+      priority: 'medium',
+      completed: false,
+      area: 'Chores'
+    },
+    {
+      id: '13',
+      title: 'Washing the floor',
+      projectId: '8',
+      startTime: new Date(new Date().setHours(14, 0, 0, 0)),
+      duration: 0.5,
+      color: '#6B7280',
+      priority: 'medium',
+      completed: false,
+      area: 'Chores'
+    },
+    {
+      id: '14',
+      title: 'Cleaning Ricky\'s cage',
+      projectId: '8',
+      startTime: new Date(new Date().setHours(15, 0, 0, 0)),
+      duration: 0.5,
+      color: '#6B7280',
+      priority: 'medium',
+      completed: false,
+      area: 'Chores'
+    },
+    // Leisure tasks
+    {
+      id: '15',
+      title: 'Watch anime (ex. Dr. Stone)',
+      projectId: '9',
+      startTime: new Date(new Date().setHours(20, 0, 0, 0)),
+      duration: 1,
+      color: '#F59E0B',
+      priority: 'low',
+      completed: false,
+      area: 'Leisure'
+    },
+    {
+      id: '16',
+      title: 'Scroll Instagram',
+      projectId: '9',
+      startTime: new Date(new Date().setHours(13, 0, 0, 0)),
+      duration: 0.5,
+      color: '#F59E0B',
+      priority: 'low',
+      completed: false,
+      area: 'Leisure'
+    },
+    {
+      id: '17',
+      title: 'Play Roblox',
+      projectId: '9',
+      startTime: new Date(new Date().setHours(16, 0, 0, 0)),
+      duration: 1,
+      color: '#F59E0B',
+      priority: 'low',
+      completed: false,
+      area: 'Leisure'
+    },
+    {
+      id: '18',
+      title: 'Listen to music (ex. "Creep")',
+      projectId: '9',
+      startTime: new Date(new Date().setHours(18, 0, 0, 0)),
+      duration: 0.5,
+      color: '#F59E0B',
+      priority: 'low',
+      completed: false,
+      area: 'Leisure'
+    },
+    // Mindfulness tasks
+    {
+      id: '19',
+      title: 'Reading the Bible',
+      projectId: '10',
+      startTime: new Date(new Date().setHours(6, 0, 0, 0)),
+      duration: 0.5,
+      color: '#7C3AED',
+      priority: 'high',
+      completed: false,
+      area: 'Mindfulness'
+    },
+    {
+      id: '20',
+      title: 'Collecting inspirational quotes',
+      projectId: '10',
+      startTime: new Date(new Date().setHours(23, 0, 0, 0)),
+      duration: 0.25,
+      color: '#7C3AED',
+      priority: 'low',
+      completed: false,
+      area: 'Mindfulness'
+    },
+    {
+      id: '21',
+      title: 'Noting memorable passages from books',
+      projectId: '10',
+      startTime: new Date(new Date().setHours(23, 15, 0, 0)),
+      duration: 0.25,
+      color: '#7C3AED',
+      priority: 'low',
+      completed: false,
+      area: 'Mindfulness'
+    },
+    {
+      id: '22',
+      title: 'Recording funny jokes',
+      projectId: '10',
+      startTime: new Date(new Date().setHours(23, 30, 0, 0)),
+      duration: 0.25,
+      color: '#7C3AED',
+      priority: 'low',
+      completed: false,
+      area: 'Mindfulness'
     }
   ]);
 

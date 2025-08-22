@@ -23,6 +23,7 @@ interface Project {
   color: string;
   category: 'hobby' | 'work' | 'personal';
   area: string;
+  dueDate?: Date | null;
 }
 
 interface AreaDashboardProps {
@@ -141,6 +142,11 @@ export const AreaDashboard: React.FC<AreaDashboardProps> = ({ areaName, tasks, p
                       </DropdownMenu>
                     </div>
                   </div>
+                  {project.dueDate && (
+                    <div className="text-xs text-muted-foreground mt-1">
+                      Due date: {project.dueDate.toLocaleDateString()}
+                    </div>
+                  )}
                 </CardHeader>
                 <CardContent className="pt-0">
                   <div className="space-y-2">
